@@ -13,10 +13,20 @@ configA     True       email@example.com  sample-project
 - `gcloud config configurations activate <CONFIG NAME>`
 
 ## Set project
-`gcloud projects list`
+- `gcloud projects list`
 ```
 PROJECT_ID      NAME     PROJECT_NUMBER
 aaa-aaa-123456  Project  123456789012
 bbb-bbb-123456  Project  210987654321
 ```
-`gcloud config set project <PROJECT ID>`
+- `gcloud config set project <PROJECT ID>`
+
+# Execute scripts
+## Source virtual env
+- `source env/bin/activate`
+
+## Intall BQ library
+- `pip install google-cloud-bigquery`
+
+## Execute scripts
+- `python app.py`
