@@ -22,7 +22,8 @@ bbb-bbb-123456  Project  210987654321
 - `gcloud config set project <PROJECT ID>`
 
 # Execute scripts
-## Source virtual env
+## create virtual env
+- `python -m venv env`
 - `source env/bin/activate`
 
 ## Intall BQ library
