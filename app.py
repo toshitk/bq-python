@@ -25,7 +25,8 @@ _print(f"Job created. job_id: {job_id}")
 
 while True:
     _job = client.get_job(job_id, location=LOCATION)
-    if _job.state == job._DONE_STATE:
+    print(_job.error_result)
+    if _job.state == job._DONE_STATE and _job.error_result is None:
         _print("The query finished.")
         break
     _print(f"The query job {job_id} is currently in state {_job.state}")
