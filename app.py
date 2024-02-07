@@ -1,39 +1,42 @@
 from google.cloud import bigquery
-from google.cloud.bigquery import job
+from google.cloud.bigquery import job as bq_job
 from datetime import datetime
 
+from queries import users, remittances
+
 LOCATION = "asia-northeast1"
+
 
 def _print(msg: str) -> None:
     print(f"{datetime.now()} {msg}")
 
+def get_job_result(client, job_id: str) -> dict:
+    job = client.get_job(job_id, location=LOCATION)
+
+    state = job.state
+    error = job.error_result
+
+    return {
+        "state": state,
+        "error": error,
+        "succeeded": state == bq_job._DONE_STATE and error is None
+    }
+
+
 client = bigquery.Client()
-
-query = """
-    select
-        first_name
-        , last_name
-    from
-        dataset.sample
-    ;
-"""
-
 job_config = bigquery.QueryJobConfig()
-query_job = client.query(query, job_config=job_config)
-job_id = query_job.job_id
-_print(f"Job created. job_id: {job_id}")
 
-while True:
-    _job = client.get_job(job_id, location=LOCATION)
-    print(_job.error_result)
-    if _job.state == job._DONE_STATE and _job.error_result is None:
-        _print("The query finished.")
-        break
-    _print(f"The query job {job_id} is currently in state {_job.state}")
-    time.sleep(1)
+users_job = users.list(client=client, job_config=job_config)
+remittances_job = remittances.list(client=client, job_config=job_config)
+jobs = [users_job, remittances_job]
 
-_print("The query data:")
-for row in query_job.result():
-    _print(row)
+_print(f"Job(users) created. job_id: {users_job.job_id}")
+_print(f"Job(remittances) created. job_id: {remittances_job.job_id}")
 
+job_ids = [job.job_id for job in jobs]
 
+job_state_dict = {
+    job_id: get_job_result(client=client, job_id=job_id)
+for job_id in job_ids}
+
+_print(job_state_dict)
