@@ -17,6 +17,7 @@ def get_job_result(client, job_id: str) -> dict:
     error = job.error_result
 
     return {
+        "job": job,
         "state": state,
         "error": error,
         "succeeded": state == bq_job._DONE_STATE and error is None
@@ -38,7 +39,11 @@ def main():
         job_id: get_job_result(client=client, job_id=job_id)
     for job_id in job_ids}
 
-    _print(job_state_dict)
+    for job_id, v in job_state_dict.items():
+        _print(f"job_id: {job_id}")
+        _print("data:")
+        for data in v["job"].result():
+            _print(data)
 
 if __name__ == "__main__":
     main()
